@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "EhrB+xVf3ngRkceNQ8OPp8IpYAcCRkFkDTt/FspH0vc=",
+  "Source": "SalesAppAPI",
+  "BasePath": "_content/SalesAppAPI",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
