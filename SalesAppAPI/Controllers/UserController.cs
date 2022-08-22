@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SalesAppAPI.Data;
+using SalesAppAPI.Interfaces.Users;
 using SalesAppAPI.Models;
 
 namespace SalesAppAPI.Controllers
@@ -10,24 +11,30 @@ namespace SalesAppAPI.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly SalesAppDbContext _context;
-        public UserController(SalesAppDbContext context) => _context = context;
+        private readonly IUserRepository _IUsers;
+
+        public UserController(IUserRepository iUsers)
+        {
+            _IUsers = iUsers;
+        }
+
 
         [HttpGet]
         public async Task<IEnumerable<User>> Get()
         {
-          return  await _context.Users.ToListAsync();
+            return await _IUsers.GetUsers();
 
         }
 
 
         [HttpGet("id")]
-        [ProducesResponseType(typeof(User),StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(User), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
-        public async Task<IActionResult> GetById(int id )
+        public async Task<IActionResult> GetById(int id)
         {
-            var user = await _context.Users.FindAsync(id);
-          return  user == null? NotFound():Ok(user);
+            var user = await _IUsers.GetUser(id);
+            
+            return user == null ? NotFound() : Ok(user);
 
         }
 
@@ -35,21 +42,28 @@ namespace SalesAppAPI.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<IActionResult> Create(User user)
         {
-            await _context.Users.AddAsync(user);
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _IUsers.AddUser(user);
+                return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
+            }
+            catch (Exception)
+            {
 
-            return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
+                throw;
+            }
+
+       
 
         }
 
         [HttpPost("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task< IActionResult> Update(int id,User user)
+        public async Task<IActionResult> Update(int id, User user)
         {
             if (id != user.Id) return BadRequest();
-            _context.Entry(user).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+           await _IUsers.UpdateUser(user);  
             return NoContent();
 
         }
@@ -60,10 +74,14 @@ namespace SalesAppAPI.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> Delete(int id)
         {
-            var userToDelete = await _context.Users.FindAsync(id);
-            if (userToDelete == null) return NotFound();
-             _context.Users.Remove(userToDelete);
-            await _context.SaveChangesAsync();
+            var user = await _IUsers.DeleteUser(id);
+
+            if (user == null)
+            {
+                return NotFound($"Employee with Id = {id} not found");
+            }
+
+            return await employeeRepository.DeleteEmployee(id);
 
             return NoContent();
         }

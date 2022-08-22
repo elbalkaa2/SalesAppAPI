@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SalesAppAPI.Data;
+using SalesAppAPI.Interfaces.Users;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +12,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<SalesAppDbContext>(o => o.UseSqlServer(builder.Configuration.GetConnectionString("SalesAppConnString")));
+
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 
 var app = builder.Build();

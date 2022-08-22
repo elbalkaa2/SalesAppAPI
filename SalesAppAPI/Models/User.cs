@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using static SalesAppAPI.Enums.Enums;
 
 namespace SalesAppAPI.Models
 {
@@ -10,8 +11,10 @@ namespace SalesAppAPI.Models
         [MaxLength(100)]    
         public string UserName { get; set; }
         [Required]
+        [MaxLength(50)]
         public string Password { get; set; }
         [Required]
+        [MaxLength(50)]
         public String Email { get; set; }
         public DateTime CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }      
@@ -22,12 +25,6 @@ namespace SalesAppAPI.Models
 
 
 
-
-   public enum Gender
-    {
-        male,
-        female
-    }
 
 
 
